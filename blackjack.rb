@@ -5,7 +5,7 @@ require "./deck"
 class Blackjack
 
   def start
-    
+
     puts <<~TEXT
     -------------------------------------
          　　　　ブラックジャック
@@ -34,17 +34,18 @@ class Blackjack
 
     me.hand = []
     hand_limit = 7
+    draw_times = 0
     me.totalscore = []
     # ドローのループ
     loop_flg = 0
     while loop_flg == 0 do
       # カードをドローする
       puts "deckからカードをドローします"
-      # puts "#{decks.cards}"
-      draw_card = decks.cards.shift(1)
-      # cardにはcard_num,card_mark,disp_numが入ってる
-      card = decks.card_judge(draw_card[0])
+        draw_card = decks.cards.shift(1)
+        card = decks.card_judge(draw_card[0])
 
+        del_draw_card = decks.cards.shift(1)
+        del_card = decks.card_judge(del_draw_card[0])
       # if文の中に入れると２１超えてもバーストしないので手前に出しておく
       me.totalscore << card[0]
       # puts "合計：#{me.totalscore.sum}"
@@ -60,8 +61,17 @@ class Blackjack
       end
 
       puts "#{card[1]} #{card[2]}"
-      # puts "deckの残り枚数は#{deck.length}枚"
+      puts "deckの残り枚数は#{decks.cards.length}枚"
       puts ""
+      # ディーラーの手札を表示させる
+      dealer.hand.push(del_draw_card[0])
+      puts "------ディーラーの手札一覧(#{dealer.hand.length}枚)------"
+      i = 0
+
+      while i < dealer.hand.length do
+        puts "#{decks.card_judge(dealer.hand[i])[1]} #{decks.card_judge(dealer.hand[i])[2]}"
+        i += 1
+      end
 
       # 手札の表示をさせる
       me.hand.push(draw_card[0])
