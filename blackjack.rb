@@ -32,22 +32,31 @@ class Blackjack
         exit
       end
       # カードの数値取得
+
       card_num = i - ( 13 * mark_no)
        # カードの種類
       disp_list = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
       # インデックス番号を元にdisp_numから文字列で番号取得
       disp_num = disp_list[(card_num - 1)]
 
+      if card_num > 11
+        card_num = 10
+      end
+
       return card_num, card_mark, disp_num
     end
 
     me = User.new(money:100000, paymoney: 0, hand: [], totalscore: 0)
-    dealer = Dealer.new(totalscore: 0)
+    dealer = Dealer.new(hand: [], totalscore: 0)
 
-    puts "あなたの所持金は#{me.money}円です"
+    @money = me.money
+
+    puts "あなたの所持金は#{@money}円です"
     puts "掛け金を入力してください"
     me.paymoney = gets.to_i
+    @money -= me.paymoney
     puts "#{me.paymoney}円を掛けました"
+    puts "残金：#{@money}"
     puts "デッキをシャッフルします"
 
     deck = [*(1..52)]
@@ -56,7 +65,7 @@ class Blackjack
 
     # 手札の設定
 
-    hand = []
+    me.hand = []
     hand_limit = 7
     me.totalscore = []
     # ドローのループ
@@ -87,31 +96,32 @@ class Blackjack
       puts ""
 
       # 手札の表示をさせる
-      hand.push(draw_card[0])
-      puts "------あなたの手札一覧(#{hand.length}枚)------"
+      me.hand.push(draw_card[0])
+      puts "------あなたの手札一覧(#{me.hand.length}枚)------"
       i = 0
       # 手持ちのカード枚数分詳細を表示
-      while i < hand.length do
+      while i < me.hand.length do
         # handには１〜５２の乱数が格納されている
         # 下記はcard_judgeを同じ数字でもう一度行なっている
-        puts "#{card_judge(hand[i])[1]} #{card_judge(hand[i])[2]}"
+        puts "#{card_judge(me.hand[i])[1]} #{card_judge(me.hand[i])[2]}"
         i += 1
       end
       puts "TotalScore：#{me.totalscore.sum}"
+      puts "handの中身#{me.hand}"
       puts "----------------------------------"
 
       if deck.length == 0
         # デッキを使い切った時の挙動
         puts "deckをつかいきりました"
         loop_flg = 1
-      elsif hand.length >= hand_limit
+      elsif me.hand.length >= hand_limit
         # 手札上限チェック
         puts "上限を超えているのでドローできません"
         puts "手札を全て捨てますか？[Y/N]"
         response = gets
         case response
         when /^[yY]/
-          hand = []
+          me.hand = []
         when /^[nN]/
           loop_flg = 1
         end
