@@ -36,53 +36,44 @@ class Blackjack
     draw_times = 0
     # ドローのループ
     loop_flg = 0
-    while loop_flg == 0 do
+
       # カードをドローする
-      puts "deckからカードをドローします"
+    puts "deckからカードをドローします"
 
-      def first_draw(decks, me, dealer)
-        draw_card = decks.cards.shift(2)
-        puts "#{draw_card}"
+    def first_draw(decks, me, dealer)
+      draw_card = decks.cards.shift(2)
+      puts "#{draw_card}"
 
-        draw_card.each do |n|
-          card = decks.card_judge(n)
-          me.hand.push(n)
-          me.totalscore << card[0]
-        end
-
-        del_draw_card = decks.cards.shift(2)
-        puts "#{del_draw_card}"
-        del_draw_card.each do |n|
-          del_card = decks.card_judge(n)
-          dealer.hand.push(n)
-          dealer.totalscore << del_card[0]
-        end
-      end
-
-      if draw_times == 0
-        first_draw(decks, me, dealer)
-        draw_times = 1
-      else
-        draw_card = decks.cards.shift(1)
-        puts "#{draw_card}"
-        card = decks.card_judge(draw_card[0])
-        me.hand.push(draw_card[0])
+      draw_card.each do |n|
+        card = decks.card_judge(n)
+        me.hand.push(n)
         me.totalscore << card[0]
       end
 
-      # puts "合計：#{me.totalscore.sum}"
-      if me.totalscore.sum < 21
+      del_draw_card = decks.cards.shift(2)
+      puts "#{del_draw_card}"
 
-      elsif me.totalscore.sum == 21
-        puts "BlackJack!!"
-        puts "あなたの勝ちです"
-        exit
-      else
-        puts "バーストしました"
-        exit
+      del_draw_card.each do |n|
+        del_card = decks.card_judge(n)
+        dealer.hand.push(n)
+        dealer.totalscore << del_card[0]
       end
+    end
 
-      # puts "#{card[1]} #{card[2]}"
+    if draw_times == 0
+      first_draw(decks, me, dealer)
+      draw_times = 1
+    else
+      draw_card = decks.cards.shift(1)
+      puts "#{draw_card}"
+      card = decks.card_judge(draw_card[0])
+      me.hand.push(draw_card[0])
+      me.totalscore << card[0]
+    end
+
+    while loop_flg == 0 do
+      puts "deckからカードをドローします"
+
       puts "deckの残り枚数は#{decks.cards.length}枚"
       puts ""
       # ディーラーの手札を表示させる
@@ -106,7 +97,6 @@ class Blackjack
       end
       puts "TotalScore：#{me.totalscore.sum}"
       puts "TotalScore：#{dealer.totalscore.sum}"
-      puts "handの中身#{me.hand}"
       puts "----------------------------------"
 
       if decks.cards.length == 0
@@ -130,9 +120,55 @@ class Blackjack
         response = gets
         case response
         when /^[yY]/
-          puts ""
+          draw_card = decks.cards.shift(1)
+          puts "#{draw_card}"
+          card = decks.card_judge(draw_card[0])
+          me.hand.push(draw_card[0])
+          me.totalscore << card[0]
+          puts "TotalScore：#{me.totalscore.sum}"
+
+          puts "------ディーラーの手札一覧(#{dealer.hand.length}枚)------"
+          i = 0
+          while i < dealer.hand.length do
+            puts "#{decks.card_judge(dealer.hand[i])[1]} #{decks.card_judge(dealer.hand[i])[2]}"
+            i += 1
+          end
+          puts "TotalScore：#{dealer.totalscore.sum}"
+          # 手札の表示をさせる
+          puts "------あなたの手札一覧(#{me.hand.length}枚)------"
+          i = 0
+          while i < me.hand.length do
+            puts "#{decks.card_judge(me.hand[i])[1]} #{decks.card_judge(me.hand[i])[2]}"
+            i += 1
+          end
+          puts "TotalScore：#{me.totalscore.sum}"
+          puts "----------------------------------"
+          if me.totalscore.sum == 21
+            puts "BlackJack!!"
+            puts "あなたの勝ちです"
+            exit
+          elsif me.totalscore.sum > 21
+            puts "バーストしました"
+            exit
+          end
         when /^[nN]/
           loop_flg = 1
+          puts "------ディーラーの手札一覧(#{dealer.hand.length}枚)------"
+          i = 0
+          while i < dealer.hand.length do
+            puts "#{decks.card_judge(dealer.hand[i])[1]} #{decks.card_judge(dealer.hand[i])[2]}"
+            i += 1
+          end
+          puts "TotalScore：#{dealer.totalscore.sum}"
+          # 手札の表示をさせる
+          puts "------あなたの手札一覧(#{me.hand.length}枚)------"
+          i = 0
+          while i < me.hand.length do
+            puts "#{decks.card_judge(me.hand[i])[1]} #{decks.card_judge(me.hand[i])[2]}"
+            i += 1
+          end
+          puts "TotalScore：#{me.totalscore.sum}"
+          puts "----------------------------------"
           if me.totalscore.sum < dealer.totalscore.sum
             puts "あなたは負けました"
           else
